@@ -59,12 +59,13 @@ class CharLCD(object):
             lines (int): Number of display rows.
         """
         # Define GPIO to LCD mapping
-        self.rs = machine.Pin(17, machine.Pin.OUT)
-        self.en = machine.Pin(21, machine.Pin.OUT)
-        self.d4 = machine.Pin(14, machine.Pin.OUT)
-        self.d5 = machine.Pin(32, machine.Pin.OUT)
-        self.d6 = machine.Pin(15, machine.Pin.OUT)
-        self.d7 = machine.Pin(33, machine.Pin.OUT)
+        self.rs = machine.Pin(18, machine.Pin.OUT)
+        self.en = machine.Pin(5, machine.Pin.OUT)
+
+        self.d4 = machine.Pin(23, machine.Pin.OUT)
+        self.d5 = machine.Pin(22, machine.Pin.OUT)
+        self.d6 = machine.Pin(21, machine.Pin.OUT)
+        self.d7 = machine.Pin(19, machine.Pin.OUT)
         self.cols = 16
         self.rows = 2
 
@@ -261,11 +262,15 @@ class CharLCD(object):
         self.lcd_byte(
             self.LCD_DISPLAYCONTROL | self.displaycontrol, self.LCD_CMD)
         
+
 # main here
 lcd = CharLCD()
 lcd.message('Hello', 2)
 lcd.set_line(1)
 lcd.message('World!', 2)
+
+print("lcd.py run!")
+
 
 
 

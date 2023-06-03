@@ -2,6 +2,8 @@
 from machine import Pin
 from time import sleep, sleep_ms
 
+from lcd import *
+
 do_rotate = True
 led_pin_nums = [23, 22, 14, 32]
 button_pin_nums = [19, 16, 17, 21]
@@ -70,12 +72,19 @@ def setup_buttons(pin_nums):
     return res    
     
 if __name__ == "__main__":
-    leds = setup_leds(led_pin_nums)
-    buttons = setup_buttons(button_pin_nums)
-        
-    while True:
-        if (do_rotate):
-            led_rotate(leds)
+
+    # main here
+    lcd = CharLCD()
+    lcd.message('Hello', 2)
+    lcd.set_line(1)
+    lcd.message('World!', 2)
+
+    # leds = setup_leds(led_pin_nums)
+    # buttons = setup_buttons(button_pin_nums)
+    #
+    # while True:
+    #     if (do_rotate):
+    #         led_rotate(leds)
     
         
     
