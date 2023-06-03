@@ -263,13 +263,7 @@ class CharLCD(object):
             self.LCD_DISPLAYCONTROL | self.displaycontrol, self.LCD_CMD)
         
 
-# main here
-lcd = CharLCD()
-lcd.message('Hello', 2)
-lcd.set_line(1)
-lcd.message('World!', 2)
 
-print("lcd.py run!")
 
 
 

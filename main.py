@@ -1,21 +1,23 @@
 
-from machine import Pin
+from machine import Pin, UART
 from time import sleep, sleep_ms
 
 from lcd import *
+from Effect import Effect
 
-do_rotate = True
-led_pin_nums = [23, 22, 14, 32]
-button_pin_nums = [19, 16, 17, 21]
-leds = []
-buttons = []
+led_pin_nums = [32, 33, 25, 26]
+button_pin_nums = [27, 14, 12, 13]
 
+midi_cc = 0xb0
+
+midi_delay_ms = 130
 
 def setup_leds(pin_nums):
     res = []
     for pin_num in pin_nums:
+#         print(pin_num)
         p = Pin(pin_num, Pin.OUT)
-        p.off()
+        p.on() # default all effects on 
         res.append(p)
     return res
 
@@ -45,23 +47,40 @@ def button_pressed(p):
     
     # identify which button was pressed
     i = buttons.index(p)
-    
-    # disable rotation
-    global do_rotate
-    do_rotate = False
 
-    
     # middle dual press case
     if i == 1 and buttons[2].value() == 0:
         led_rotate(leds)
-
     
     # toggle corresponding LED
     new_val = not leds[i].value()
     leds[i].value(new_val)
-    
 
+    # do midi
+    effect = effects[i]
+    midi_msg = bytes([midi_cc, effect.cc_num, 0])
+
+    midi_handle.write(midi_msg)
+    sleep_ms(midi_delay_ms)
+
+    if (effect.pressed): # turn off needs double
+        midi_handle.write(midi_msg)
+        sleep_ms(midi_delay_ms)
+
+    effect.pressed = not effect.pressed
     
+    # home button
+    midi_handle.write(bytes([midi_cc, 20, 0]))
+    
+    # LCD
+    lcd.clear()
+    if effect.pressed:
+        status = "on"
+    else:
+        status = "off"
+    lcd.message(f"{effect.name} {status}")
+
+
 
 def setup_buttons(pin_nums):
     res = []
@@ -69,22 +88,42 @@ def setup_buttons(pin_nums):
         p = Pin(pin_num, Pin.IN, Pin.PULL_UP)
         p.irq(button_pressed, Pin.IRQ_FALLING)
         res.append(p)
-    return res    
+    return res
+
+def setup_midi():
+    handle = UART(1, baudrate=31250, bits=8, parity=None, stop=1, tx=17)
+    return handle
+    
+
+def setup_effects():
+    res = []
+    res.append(Effect("FXA", 6))
+    res.append(Effect("Drive", 7))
+    res.append(Effect("FXB", 12))
+    res.append(Effect("Reverb", 14))
+
+    return res
     
 if __name__ == "__main__":
 
-    # main here
+    # setup lcd
     lcd = CharLCD()
-    lcd.message('Hello', 2)
+    lcd.message('Startup ', 2)
     lcd.set_line(1)
-    lcd.message('World!', 2)
+    lcd.message('success', 2)
 
-    # leds = setup_leds(led_pin_nums)
-    # buttons = setup_buttons(button_pin_nums)
-    #
-    # while True:
-    #     if (do_rotate):
-    #         led_rotate(leds)
+    # setup effects
+    effects = setup_effects()
+
+    # setup led and buttons
+    leds = setup_leds(led_pin_nums)
+    buttons = setup_buttons(button_pin_nums)
+    
+    # setup midi
+    midi_handle = setup_midi()
+
+
+
     
         
     
