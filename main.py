@@ -69,6 +69,7 @@ def button_pressed(p):
 
     # home button
     midi_handle.write(bytes([midi_cc, 20, 0]))
+    print("midi sent")
     
     # LCD
 #     lcd.clear()
@@ -90,7 +91,7 @@ def setup_button(pin_num, pullup):
 
 # noinspection PyArgumentList
 def setup_midi():
-    handle = UART(1, baudrate=31250, bits=8, parity=None, stop=1, tx=17)
+    handle = UART(1, baudrate=31250, bits=8, parity=None, stop=1, tx=15)
     return handle
 
 
